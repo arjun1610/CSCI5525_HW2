@@ -1,4 +1,4 @@
-function [meanTime, stdTime] = mysmosvm( filename, numruns )
+function [meanTime, stdTime] = mysmosvm( file_name, numruns, sample_size )
 %MYSMOSVM - MAIN FILE FOR SVM IMPLEMENTATION USING SMO ALGORITHM
 %  This is the main routine function which works on the training
 %examples, iterates using the number of runs given as the input and tries
@@ -6,10 +6,10 @@ function [meanTime, stdTime] = mysmosvm( filename, numruns )
 % Once we have the KKT conditions followed, we compute the Dual objective
 % function value.
 
-global Alphas E b C K target Obj X;
-data=csvread(filename);
-X = data(1:2000,2:end);
-y = data(1:2000,1);
+global Alphas E b C K target Obj X w;
+data=csvread(file_name);
+X = data(1:sample_size,2:end);
+y = data(1:sample_size,1);
 C = 2;
 n_inputs = size(X,1);
 %Kernelization of the input vectors
@@ -40,6 +40,7 @@ for i=1: numruns
     Alphas = zeros(size(X,1),1);
     b=0;
     Obj=[];
+    w=0;
     E = -target;
     [timeSpent(i)] = smo_main;
     objectiveFn{i}=Obj;
@@ -50,10 +51,16 @@ stdTime=std(timeSpent);
 
 fprintf('Avg runtime for %d runs: %2f seconds\n',numruns, meanTime);
 fprintf('Std runtime for %d runs: %2f seconds\n',numruns, stdTime);
-% write the values of Dual Objective function onto a file.
-dlmwrite('tempQ2.txt',[]);
-dlmwrite('tempQ2.txt',objectiveFn,'delimiter','\t'); 
 
+% write the values of Dual Objective function onto a file.
+file_name = 'tempQ2.txt';
+fid = fopen(file_name,'w');
+for i=1:numruns
+    fprintf(fid,'%s,',objectiveFn{i});
+    fprintf(fid,'\n');
+end
+
+fclose(fid);
 fprintf('Plot data exported to ./tempQ2.txt\n');
 figure;
 title('SMO Algorithm')

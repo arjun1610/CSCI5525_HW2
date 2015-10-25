@@ -1,6 +1,6 @@
 function  result = takeStep( i1, i2 )
 
-global E K target Alphas C Obj b t ;
+global E K target Alphas C Obj b t X w;
 eps = 0.0001;
 result = 0;
 
@@ -96,13 +96,16 @@ else
     end
 end
 
-
-% Update objective function 
-Obj= [Obj updateObj];
+% Update objective function
+% Obj= [Obj updateObj];
 %Store a1 in the alpha array
 %Store a2 in the Alpha array
 Alphas(i1) = a1;
 Alphas(i2) = a2; 
+
+w= w+ y1*(a1-alph1)*X(i1,:) + y2*(a2-alph2)*X(i2,:);
+Obj = [ Obj 0.5*w*w'];
+
 
 % Update eror cache using new Lagrange multipliers
 updateErrorCache(i1,i2);

@@ -43,8 +43,12 @@ stdTime=std(timeSpent);
 fprintf('Avg runtime for %d runs with minibatch size of %d: %2f seconds\n',numruns, k, meanTime);
 fprintf('Std runtime for %d runs with minibatch size of %d: %2f seconds\n',numruns, k, stdTime);
 % write the values of Objective function with projected W onto a file.
-dlmwrite('tempQ3.txt',[]);
-dlmwrite('tempQ3.txt',objectiveFn,'delimiter','\t'); 
+file_name = 'tempQ3.txt';
+fid = fopen(file_name,'w');
+for i=1:numruns
+    fprintf(fid,'%s,',objectiveBallCell{i});
+    fprintf(fid,'\n');
+end
 
 fprintf('Plot data exported to ./tempQ3.txt\n');
 end
